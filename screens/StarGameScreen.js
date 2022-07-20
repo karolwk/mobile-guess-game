@@ -1,7 +1,33 @@
-import React from 'react';
-import { TextInput, View, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { TextInput, View, StyleSheet, Alert } from 'react-native';
 import PrimaryButton from '../components/PrimaryButton';
-const StarGameScreen = () => {
+
+const StarGameScreen = ({ onPickedNumber }) => {
+  const [enteredNumber, setEnteredNumber] = useState('');
+
+  const numberInputHandler = (enteredText) => {
+    setEnteredNumber(enteredText);
+  };
+
+  const resetInputHandler = () => {
+    setEnteredNumber('');
+  };
+
+  const confirmInputHandler = () => {
+    const chosenNumber = parseInt(enteredNumber);
+    if (isNaN(chosenNumber) || chosenNumber <= 0 || chosenNumber > 99) {
+      // show alert
+      Alert.alert(
+        'Invalid number!',
+        'Number has to be a number between 1 and 99',
+        [{ text: 'Okay', style: 'destructive', onPress: resetInputHandler }]
+      );
+      return;
+    }
+    console.log('good number', enteredNumber);
+    onPickedNumber(enteredNumber);
+  };
+
   return (
     <View style={styles.inputContainer}>
       <TextInput
@@ -10,9 +36,17 @@ const StarGameScreen = () => {
         keyboardType="number-pad"
         autoCapitalize="none"
         autoCorrect={false}
+        onChangeText={numberInputHandler}
+        value={enteredNumber}
       />
-      <PrimaryButton>Reset</PrimaryButton>
-      <PrimaryButton>Confirm</PrimaryButton>
+      <View style={styles.buttonsContainer}>
+        <View style={styles.buttonContainer}>
+          <PrimaryButton onPress={resetInputHandler}>Reset</PrimaryButton>
+        </View>
+        <View style={styles.buttonContainer}>
+          <PrimaryButton onPress={confirmInputHandler}>Confirm</PrimaryButton>
+        </View>
+      </View>
     </View>
   );
 };
@@ -24,7 +58,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 24,
     borderRadius: 8,
     backgroundColor: '#4e0329',
-
+    justifyContent: 'center',
+    alignItems: 'center',
     elevation: 4, // Equivalent to boxshadow, works only on Android
 
     //Only for iOS
@@ -44,6 +79,14 @@ const styles = StyleSheet.create({
     marginVertical: 8, // adds the same space on top and bottom
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+
+  buttonsContainer: {
+    flexDirection: 'row',
+  },
+
+  buttonContainer: {
+    flex: 1,
   },
 });
 export default StarGameScreen;
